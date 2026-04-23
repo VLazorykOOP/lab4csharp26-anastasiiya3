@@ -1,0 +1,994 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace LabWork3_Extended
+{
+    // ==================== ЗАВДАННЯ 1: КЛАС ATriangle (ДОПОВНЕНИЙ) ====================
+    class ATriangle
+    {
+        // Захищені поля
+        protected int a; // катет 1
+        protected int b; // катет 2
+        protected int c; // колір трикутника
+
+        // Властивості
+        public int A
+        {
+            get { return a; }
+            set
+            {
+                if (value > 0)
+                    a = value;
+                else
+                    throw new ArgumentException("Катет має бути додатним");
+            }
+        }
+
+        public int B
+        {
+            get { return b; }
+            set
+            {
+                if (value > 0)
+                    b = value;
+                else
+                    throw new ArgumentException("Катет має бути додатним");
+            }
+        }
+
+        public int Color
+        {
+            get { return c; }
+            set { c = value; }
+        }
+
+        // Конструктор
+        public ATriangle(int a, int b, int color)
+        {
+            this.a = a;
+            this.b = b;
+            this.c = color;
+        }
+
+        // Індексатор
+        public int this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0: return a;
+                    case 1: return b;
+                    case 2: return c;
+                    default:
+                        throw new IndexOutOfRangeException("Помилка: індекс має бути 0, 1 або 2");
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0: a = value; break;
+                    case 1: b = value; break;
+                    case 2: c = value; break;
+                    default:
+                        throw new IndexOutOfRangeException("Помилка: індекс має бути 0, 1 або 2");
+                }
+            }
+        }
+
+        // Методи
+        public void PrintSides()
+        {
+            double hypotenuse = Math.Sqrt(a * a + b * b);
+            Console.WriteLine($"Катети: {a}, {b}, Гіпотенуза: {hypotenuse:F2}");
+        }
+
+        public double CalculatePerimeter()
+        {
+            double hypotenuse = Math.Sqrt(a * a + b * b);
+            return a + b + hypotenuse;
+        }
+
+        public double CalculateArea()
+        {
+            return (a * b) / 2.0;
+        }
+
+        public bool IsIsosceles()
+        {
+            return a == b;
+        }
+
+        public bool IsValid()
+        {
+            return a > 0 && b > 0;
+        }
+
+        public void PrintInfo()
+        {
+            Console.WriteLine($"Трикутник: a={a}, b={b}, колір={c}, площа={CalculateArea():F2}, периметр={CalculatePerimeter():F2}, рівнобедрений={(IsIsosceles() ? "Так" : "Ні")}");
+        }
+
+        // Перевантаження операції ++ (збільшує a і b на 1)
+        public static ATriangle operator ++(ATriangle t)
+        {
+            t.a++;
+            t.b++;
+            return t;
+        }
+
+        // Перевантаження операції -- (зменшує a і b на 1)
+        public static ATriangle operator --(ATriangle t)
+        {
+            t.a--;
+            t.b--;
+            return t;
+        }
+
+        // Перевантаження true/false
+        public static bool operator true(ATriangle t)
+        {
+            return t.IsValid();
+        }
+
+        public static bool operator false(ATriangle t)
+        {
+            return !t.IsValid();
+        }
+
+        // Перевантаження операції + (додає скаляр до a і b)
+        public static ATriangle operator +(ATriangle t, int scalar)
+        {
+            t.a += scalar;
+            t.b += scalar;
+            return t;
+        }
+    }
+
+    // ==================== ЗАВДАННЯ 2: КЛАС VectorDouble ====================
+    class VectorDouble
+    {
+        // Захищені поля
+        protected double[] FArray;
+        protected uint num;
+        protected int codeError;
+        protected static uint num_vd;
+
+        // Властивості
+        public uint Size
+        {
+            get { return num; }
+        }
+
+        public int CodeError
+        {
+            get { return codeError; }
+            set { codeError = value; }
+        }
+
+        public static uint VectorCount
+        {
+            get { return num_vd; }
+        }
+
+        // Індексатор
+        public double this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < num)
+                {
+                    codeError = 0;
+                    return FArray[index];
+                }
+                else
+                {
+                    codeError = -1;
+                    return 0;
+                }
+            }
+            set
+            {
+                if (index >= 0 && index < num)
+                {
+                    FArray[index] = value;
+                    codeError = 0;
+                }
+                else
+                {
+                    codeError = -1;
+                }
+            }
+        }
+
+        // Конструктори
+        public VectorDouble()
+        {
+            num = 1;
+            FArray = new double[num];
+            FArray[0] = 0;
+            codeError = 0;
+            num_vd++;
+        }
+
+        public VectorDouble(uint size)
+        {
+            num = size;
+            FArray = new double[num];
+            for (int i = 0; i < num; i++)
+                FArray[i] = 0;
+            codeError = 0;
+            num_vd++;
+        }
+
+        public VectorDouble(uint size, double initValue)
+        {
+            num = size;
+            FArray = new double[num];
+            for (int i = 0; i < num; i++)
+                FArray[i] = initValue;
+            codeError = 0;
+            num_vd++;
+        }
+
+        // Деструктор
+        ~VectorDouble()
+        {
+            Console.WriteLine($"Деструктор VectorDouble: видалено вектор розміром {num}");
+            num_vd--;
+        }
+
+        // Методи
+        public void InputFromKeyboard()
+        {
+            Console.WriteLine($"Введіть {num} елементів вектора:");
+            for (int i = 0; i < num; i++)
+            {
+                Console.Write($"Елемент [{i}]: ");
+                if (double.TryParse(Console.ReadLine(), out double value))
+                    FArray[i] = value;
+                else
+                    FArray[i] = 0;
+            }
+        }
+
+        public void Print()
+        {
+            Console.Write("Vector: [");
+            for (int i = 0; i < num; i++)
+            {
+                Console.Write(FArray[i]);
+                if (i < num - 1) Console.Write(", ");
+            }
+            Console.WriteLine("]");
+        }
+
+        public void SetAllValues(double value)
+        {
+            for (int i = 0; i < num; i++)
+                FArray[i] = value;
+        }
+
+        public static uint GetVectorCount()
+        {
+            return num_vd;
+        }
+
+        // Перевантаження операцій
+        // + для двох векторів
+        public static VectorDouble operator +(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            VectorDouble result = new VectorDouble(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v1[i] + v2[i];
+            return result;
+        }
+
+        // + для вектора і скаляра
+        public static VectorDouble operator +(VectorDouble v, double scalar)
+        {
+            VectorDouble result = new VectorDouble(v.num);
+            for (int i = 0; i < v.num; i++)
+                result[i] = v[i] + scalar;
+            return result;
+        }
+
+        // - для двох векторів
+        public static VectorDouble operator -(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            VectorDouble result = new VectorDouble(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v1[i] - v2[i];
+            return result;
+        }
+
+        // - для вектора і скаляра
+        public static VectorDouble operator -(VectorDouble v, double scalar)
+        {
+            VectorDouble result = new VectorDouble(v.num);
+            for (int i = 0; i < v.num; i++)
+                result[i] = v[i] - scalar;
+            return result;
+        }
+
+        // * для двох векторів
+        public static VectorDouble operator *(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            VectorDouble result = new VectorDouble(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v1[i] * v2[i];
+            return result;
+        }
+
+        // * для вектора і скаляра
+        public static VectorDouble operator *(VectorDouble v, double scalar)
+        {
+            VectorDouble result = new VectorDouble(v.num);
+            for (int i = 0; i < v.num; i++)
+                result[i] = v[i] * scalar;
+            return result;
+        }
+
+        // / для двох векторів
+        public static VectorDouble operator /(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            VectorDouble result = new VectorDouble(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v2[i] != 0 ? v1[i] / v2[i] : 0;
+            return result;
+        }
+
+        // / для вектора і скаляра
+        public static VectorDouble operator /(VectorDouble v, double scalar)
+        {
+            VectorDouble result = new VectorDouble(v.num);
+            for (int i = 0; i < v.num; i++)
+                result[i] = scalar != 0 ? v[i] / scalar : 0;
+            return result;
+        }
+
+        // % для двох векторів
+        public static VectorDouble operator %(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            VectorDouble result = new VectorDouble(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v2[i] != 0 ? v1[i] % v2[i] : 0;
+            return result;
+        }
+
+        // % для вектора і скаляра
+        public static VectorDouble operator %(VectorDouble v, double scalar)
+        {
+            VectorDouble result = new VectorDouble(v.num);
+            for (int i = 0; i < v.num; i++)
+                result[i] = scalar != 0 ? v[i] % scalar : 0;
+            return result;
+        }
+
+        // == та !=
+        public static bool operator ==(VectorDouble v1, VectorDouble v2)
+        {
+            if (v1.num != v2.num) return false;
+            for (int i = 0; i < v1.num; i++)
+                if (Math.Abs(v1[i] - v2[i]) > 1e-9)
+                    return false;
+            return true;
+        }
+
+        public static bool operator !=(VectorDouble v1, VectorDouble v2)
+        {
+            return !(v1 == v2);
+        }
+
+        // >, >=, <, <=
+        public static bool operator >(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            for (int i = 0; i < size; i++)
+                if (v1[i] <= v2[i])
+                    return false;
+            return true;
+        }
+
+        public static bool operator >=(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            for (int i = 0; i < size; i++)
+                if (v1[i] < v2[i])
+                    return false;
+            return true;
+        }
+
+        public static bool operator <(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            for (int i = 0; i < size; i++)
+                if (v1[i] >= v2[i])
+                    return false;
+            return true;
+        }
+
+        public static bool operator <=(VectorDouble v1, VectorDouble v2)
+        {
+            uint size = Math.Min(v1.num, v2.num);
+            for (int i = 0; i < size; i++)
+                if (v1[i] > v2[i])
+                    return false;
+            return true;
+        }
+    }
+
+    // ==================== ЗАВДАННЯ 2.10: КЛАС VectorByte ====================
+    class VectorByte
+    {
+        // Захищені поля
+        protected byte[] Array;
+        protected uint n;
+        protected int codeError;
+        protected static uint num_vec;
+
+        // Властивості
+        public uint Size
+        {
+            get { return n; }
+        }
+
+        public int CodeError
+        {
+            get { return codeError; }
+            set { codeError = value; }
+        }
+
+        public static uint VectorCount
+        {
+            get { return num_vec; }
+        }
+
+        // Індексатор
+        public byte this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < n)
+                {
+                    codeError = 0;
+                    return Array[index];
+                }
+                else
+                {
+                    codeError = -1;
+                    return 0;
+                }
+            }
+            set
+            {
+                if (index >= 0 && index < n)
+                {
+                    Array[index] = value;
+                    codeError = 0;
+                }
+                else
+                {
+                    codeError = -1;
+                }
+            }
+        }
+
+        // Конструктори
+        public VectorByte()
+        {
+            n = 1;
+            Array = new byte[n];
+            Array[0] = 0;
+            codeError = 0;
+            num_vec++;
+        }
+
+        public VectorByte(uint size)
+        {
+            n = size;
+            Array = new byte[n];
+            for (int i = 0; i < n; i++)
+                Array[i] = 0;
+            codeError = 0;
+            num_vec++;
+        }
+
+        public VectorByte(uint size, byte initValue)
+        {
+            n = size;
+            Array = new byte[n];
+            for (int i = 0; i < n; i++)
+                Array[i] = initValue;
+            codeError = 0;
+            num_vec++;
+        }
+
+        // Деструктор
+        ~VectorByte()
+        {
+            Console.WriteLine($"Деструктор VectorByte: видалено вектор розміром {n}");
+            num_vec--;
+        }
+
+        // Методи
+        public void InputFromKeyboard()
+        {
+            Console.WriteLine($"Введіть {n} елементів вектора (byte 0-255):");
+            for (int i = 0; i < n; i++)
+            {
+                Console.Write($"Елемент [{i}]: ");
+                if (byte.TryParse(Console.ReadLine(), out byte value))
+                    Array[i] = value;
+                else
+                    Array[i] = 0;
+            }
+        }
+
+        public void Print()
+        {
+            Console.Write("VectorByte: [");
+            for (int i = 0; i < n; i++)
+            {
+                Console.Write(Array[i]);
+                if (i < n - 1) Console.Write(", ");
+            }
+            Console.WriteLine("]");
+        }
+
+        public void SetAllValues(byte value)
+        {
+            for (int i = 0; i < n; i++)
+                Array[i] = value;
+        }
+
+        public static uint GetVectorCount()
+        {
+            return num_vec;
+        }
+
+        // Унарні операції
+        public static VectorByte operator ++(VectorByte v)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] + 1);
+            return result;
+        }
+
+        public static VectorByte operator --(VectorByte v)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] - 1);
+            return result;
+        }
+
+        // true/false
+        public static bool operator true(VectorByte v)
+        {
+            if (v.n == 0) return false;
+            for (int i = 0; i < v.n; i++)
+                if (v[i] == 0) return false;
+            return true;
+        }
+
+        public static bool operator false(VectorByte v)
+        {
+            return !(v.n != 0 && v.Array.All(b => b != 0));
+        }
+
+        // ! (заперечення)
+        public static bool operator !(VectorByte v)
+        {
+            return v.n == 0;
+        }
+
+        // ~ (побітове заперечення)
+        public static VectorByte operator ~(VectorByte v)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)~v[i];
+            return result;
+        }
+
+        // Арифметичні бінарні операції
+        public static VectorByte operator +(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = (byte)(v1[i] + v2[i]);
+            return result;
+        }
+
+        public static VectorByte operator +(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] + scalar);
+            return result;
+        }
+
+        public static VectorByte operator -(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = (byte)(v1[i] - v2[i]);
+            return result;
+        }
+
+        public static VectorByte operator -(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] - scalar);
+            return result;
+        }
+
+        public static VectorByte operator *(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = (byte)(v1[i] * v2[i]);
+            return result;
+        }
+
+        public static VectorByte operator *(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] * scalar);
+            return result;
+        }
+
+        public static VectorByte operator /(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v2[i] != 0 ? (byte)(v1[i] / v2[i]) : (byte)0;
+            return result;
+        }
+
+        public static VectorByte operator /(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = scalar != 0 ? (byte)(v[i] / scalar) : (byte)0;
+            return result;
+        }
+
+        public static VectorByte operator %(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = v2[i] != 0 ? (byte)(v1[i] % v2[i]) : (byte)0;
+            return result;
+        }
+
+        public static VectorByte operator %(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = scalar != 0 ? (byte)(v[i] % scalar) : (byte)0;
+            return result;
+        }
+
+        // Побітові операції
+        public static VectorByte operator |(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = (byte)(v1[i] | v2[i]);
+            return result;
+        }
+
+        public static VectorByte operator |(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] | scalar);
+            return result;
+        }
+
+        public static VectorByte operator ^(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = (byte)(v1[i] ^ v2[i]);
+            return result;
+        }
+
+        public static VectorByte operator ^(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] ^ scalar);
+            return result;
+        }
+
+        public static VectorByte operator &(VectorByte v1, VectorByte v2)
+        {
+            uint size = Math.Min(v1.n, v2.n);
+            VectorByte result = new VectorByte(size);
+            for (int i = 0; i < size; i++)
+                result[i] = (byte)(v1[i] & v2[i]);
+            return result;
+        }
+
+        public static VectorByte operator &(VectorByte v, byte scalar)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] & scalar);
+            return result;
+        }
+
+        public static VectorByte operator >>(VectorByte v, int shift)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] >> shift);
+            return result;
+        }
+
+        public static VectorByte operator <<(VectorByte v, int shift)
+        {
+            VectorByte result = new VectorByte(v.n);
+            for (int i = 0; i < v.n; i++)
+                result[i] = (byte)(v[i] << shift);
+            return result;
+        }
+    }
+
+    // ==================== ЗАВДАННЯ 3: СТРУКТУРА PATIENT ====================
+    struct Patient
+    {
+        // Поля
+        private string lastName;
+        private string firstName;
+        private string patronymic;
+        private string address;
+        private string medicalCardNumber;
+        private string insurancePolicyNumber;
+
+        // Властивості
+        public string LastName
+        {
+            get { return lastName; }
+            set { lastName = value; }
+        }
+
+        public string FirstName
+        {
+            get { return firstName; }
+            set { firstName = value; }
+        }
+
+        public string Patronymic
+        {
+            get { return patronymic; }
+            set { patronymic = value; }
+        }
+
+        public string Address
+        {
+            get { return address; }
+            set { address = value; }
+        }
+
+        public string MedicalCardNumber
+        {
+            get { return medicalCardNumber; }
+            set { medicalCardNumber = value; }
+        }
+
+        public string InsurancePolicyNumber
+        {
+            get { return insurancePolicyNumber; }
+            set { insurancePolicyNumber = value; }
+        }
+
+        // Конструктор
+        public Patient(string lastName, string firstName, string patronymic, string address, string medicalCardNumber, string insurancePolicyNumber)
+        {
+            this.lastName = lastName;
+            this.firstName = firstName;
+            this.patronymic = patronymic;
+            this.address = address;
+            this.medicalCardNumber = medicalCardNumber;
+            this.insurancePolicyNumber = insurancePolicyNumber;
+        }
+
+        // Метод виведення
+        public void Print()
+        {
+            Console.WriteLine($"Пацієнт: {lastName} {firstName} {patronymic}");
+            Console.WriteLine($"  Адреса: {address}");
+            Console.WriteLine($"  Медична картка: {medicalCardNumber}");
+            Console.WriteLine($"  Страховий поліс: {insurancePolicyNumber}");
+        }
+    }
+
+    // ==================== ГОЛОВНА ПРОГРАМА ====================
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("========== ЛАБОРАТОРНА РОБОТА №3 (РОЗШИРЕНА) ==========\n");
+
+            // ========== ТЕСТУВАННЯ ATriangle ==========
+            Console.WriteLine("=== 1. ТЕСТУВАННЯ КЛАСУ ATriangle ===\n");
+
+            ATriangle triangle = new ATriangle(3, 4, 1);
+            Console.WriteLine("Початковий трикутник:");
+            triangle.PrintInfo();
+
+            // Тестування індексатора
+            Console.WriteLine("\n--- Тестування індексатора ---");
+            Console.WriteLine($"triangle[0] (катет a) = {triangle[0]}");
+            Console.WriteLine($"triangle[1] (катет b) = {triangle[1]}");
+            Console.WriteLine($"triangle[2] (колір) = {triangle[2]}");
+            triangle[0] = 5;
+            triangle[1] = 12;
+            Console.WriteLine("Після зміни через індексатор:");
+            triangle.PrintInfo();
+
+            // Тестування операції ++
+            Console.WriteLine("\n--- Тестування операції ++ ---");
+            triangle++;
+            triangle.PrintInfo();
+
+            // Тестування операції +
+            Console.WriteLine("\n--- Тестування операції + (додавання скаляра) ---");
+            triangle = triangle + 2;
+            triangle.PrintInfo();
+
+            // Тестування true/false
+            Console.WriteLine("\n--- Тестування true/false ---");
+            Console.WriteLine($"Трикутник існує: {(triangle ? "Так" : "Ні")}");
+            ATriangle invalidTriangle = new ATriangle(-1, 2, 1);
+            Console.WriteLine($"Неправильний трикутник існує: {(invalidTriangle ? "Так" : "Ні")}");
+
+            // ========== ТЕСТУВАННЯ VectorDouble ==========
+            Console.WriteLine("\n\n=== 2. ТЕСТУВАННЯ КЛАСУ VectorDouble ===\n");
+
+            VectorDouble v1 = new VectorDouble(3, 2.5);
+            VectorDouble v2 = new VectorDouble(3, 1.5);
+            Console.WriteLine("Вектор v1:");
+            v1.Print();
+            Console.WriteLine("Вектор v2:");
+            v2.Print();
+
+            // Тестування арифметичних операцій
+            Console.WriteLine("\n--- Арифметичні операції ---");
+            VectorDouble v3 = v1 + v2;
+            Console.Write("v1 + v2 = ");
+            v3.Print();
+
+            VectorDouble v4 = v1 - v2;
+            Console.Write("v1 - v2 = ");
+            v4.Print();
+
+            VectorDouble v5 = v1 * v2;
+            Console.Write("v1 * v2 = ");
+            v5.Print();
+
+            VectorDouble v6 = v1 / v2;
+            Console.Write("v1 / v2 = ");
+            v6.Print();
+
+            // Тестування операцій зі скаляром
+            Console.WriteLine("\n--- Операції зі скаляром ---");
+            VectorDouble v7 = v1 + 5.0;
+            Console.Write("v1 + 5 = ");
+            v7.Print();
+
+            // Тестування порівнянь
+            Console.WriteLine("\n--- Порівняння векторів ---");
+            Console.WriteLine($"v1 == v2: {v1 == v2}");
+            Console.WriteLine($"v1 > v2: {v1 > v2}");
+            Console.WriteLine($"v1 < v2: {v1 < v2}");
+
+            Console.WriteLine($"\nКількість векторів VectorDouble: {VectorDouble.GetVectorCount()}");
+
+            // ========== ТЕСТУВАННЯ VectorByte ==========
+            Console.WriteLine("\n\n=== 3. ТЕСТУВАННЯ КЛАСУ VectorByte ===\n");
+
+            VectorByte vb1 = new VectorByte(4, 5);
+            VectorByte vb2 = new VectorByte(4, 3);
+            Console.WriteLine("VectorByte vb1:");
+            vb1.Print();
+            Console.WriteLine("VectorByte vb2:");
+            vb2.Print();
+
+            // Тестування арифметичних операцій
+            Console.WriteLine("\n--- Арифметичні операції ---");
+            VectorByte vb3 = vb1 + vb2;
+            Console.Write("vb1 + vb2 = ");
+            vb3.Print();
+
+            VectorByte vb4 = vb1 * vb2;
+            Console.Write("vb1 * vb2 = ");
+            vb4.Print();
+
+            // Тестування побітових операцій
+            Console.WriteLine("\n--- Побітові операції ---");
+            VectorByte vb5 = vb1 | vb2;
+            Console.Write("vb1 | vb2 = ");
+            vb5.Print();
+
+            VectorByte vb6 = vb1 & vb2;
+            Console.Write("vb1 & vb2 = ");
+            vb6.Print();
+
+            // Тестування унарних операцій
+            Console.WriteLine("\n--- Унарні операції ---");
+            VectorByte vb7 = ++vb1;
+            Console.Write("++vb1 = ");
+            vb7.Print();
+
+            VectorByte vb8 = ~vb1;
+            Console.Write("~vb1 = ");
+            vb8.Print();
+
+            // Тестування true/false та !
+            Console.WriteLine("\n--- true/false та ! ---");
+            VectorByte vb9 = new VectorByte(3, 1);
+            Console.WriteLine($"vb9 (всі ненульові): {(vb9 ? "true" : "false")}");
+            Console.WriteLine($"!vb9: {!vb9}");
+
+            Console.WriteLine($"\nКількість векторів VectorByte: {VectorByte.GetVectorCount()}");
+
+            // ========== ТЕСТУВАННЯ STRUCTURE Patient ==========
+            Console.WriteLine("\n\n=== 4. ТЕСТУВАННЯ СТРУКТУРИ PATIENT ===\n");
+
+            // Створення масиву пацієнтів
+            List<Patient> patients = new List<Patient>
+            {
+                new Patient("Іваненко", "Іван", "Іванович", "вул. Київська, 5", "MC001", "SP001"),
+                new Patient("Петренко", "Петро", "Петрович", "вул. Львівська, 12", "MC002", "SP002"),
+                new Patient("Сидоренко", "Сидір", "Сидорович", "вул. Харківська, 8", "MC003", "SP003"),
+                new Patient("Коваленко", "Марія", "Олексіївна", "вул. Одеська, 3", "MC004", "SP004")
+            };
+
+            Console.WriteLine("Список пацієнтів:");
+            foreach (var p in patients)
+                p.Print();
+
+            // Видалення елемента із заданим номером медичної карти
+            string cardToRemove = "MC003";
+            int removedCount = patients.RemoveAll(p => p.MedicalCardNumber == cardToRemove);
+            Console.WriteLine($"\nВидалено пацієнта з карткою {cardToRemove}: {(removedCount > 0 ? "Так" : "Ні")}");
+
+            // Додавання 2 елементів на початок масиву
+            Patient newPatient1 = new Patient("Шевченко", "Тарас", "Григорович", "вул. Чернігівська, 7", "MC005", "SP005");
+            Patient newPatient2 = new Patient("Франко", "Іван", "Якович", "вул. Івано-Франківська, 10", "MC006", "SP006");
+            
+            patients.Insert(0, newPatient2);
+            patients.Insert(0, newPatient1);
+
+            Console.WriteLine("\nОновлений список пацієнтів (після додавання 2 на початок):");
+            foreach (var p in patients)
+                p.Print();
+
+            Console.WriteLine("\n\n========== ТЕСТУВАННЯ ЗАВЕРШЕНО ==========");
+        }
+    }
+}
